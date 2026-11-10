@@ -6,7 +6,7 @@ Minimal, cross-platform streak/habit tracker. A responsive web app — works in 
 
 - **Next.js 15** (App Router) + **TypeScript** + **React 18**
 - **Tailwind CSS 3** with CSS-variable design tokens (light/dark via `prefers-color-scheme`)
-- **Prisma 5** + **SQLite** (`prisma/dev.db`). Swap `DATABASE_URL` for Postgres with no code changes.
+- **Prisma 5** + **Postgres** (Neon in prod). Schema uses `DATABASE_URL` (pooled) and `DIRECT_URL` (direct, for `db push`).
 - Auth: **bcrypt** (cost 12) + **jose** JWT in an `httpOnly` `SameSite=Lax` `Secure` cookie (`streak_session`)
 - Validation: **Zod** on every API body
 

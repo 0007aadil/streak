@@ -17,13 +17,19 @@ Built with **Next.js 15**, **TypeScript**, **Prisma**, and **Tailwind CSS**. Sty
 
 ## Quick start
 
+Copy `.env.example` → `.env` and fill in a Neon (or local Postgres) connection string plus a real `AUTH_SECRET`:
+
 ```bash
+cp .env.example .env
+# edit .env with your DATABASE_URL, DIRECT_URL, AUTH_SECRET
 npm install
 npm run db:push
 npm run dev
 ```
 
 Open http://localhost:3000.
+
+**Need a free Postgres for local dev?** Create a project on [neon.tech](https://neon.tech) and paste the pooled URL into `DATABASE_URL` and the direct URL into `DIRECT_URL`.
 
 ## Tech
 
@@ -32,7 +38,7 @@ Open http://localhost:3000.
 | Framework | Next.js 15 (App Router) |
 | Language | TypeScript (strict) |
 | UI | React 18 + Tailwind CSS 3 |
-| Database | SQLite via Prisma (swap `DATABASE_URL` for Postgres with no code changes) |
+| Database | Postgres via Prisma (Neon in production; any Postgres locally) |
 | Auth | bcryptjs + jose (HS256 JWT) |
 | Validation | Zod on every API body |
 
@@ -46,15 +52,18 @@ Open http://localhost:3000.
 
 See [`CLAUDE.md`](CLAUDE.md) for developer notes (project layout, data model, deploy steps).
 
-## Deploy
+## Deploy (Vercel + Neon)
 
-Before deploying, generate a real `AUTH_SECRET`:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-```
-
-For serverless hosts (Vercel, Netlify), switch the Prisma provider from `sqlite` to `postgresql` and point `DATABASE_URL` at a hosted Postgres (Neon, Supabase, Vercel Postgres). For a container host (Railway, Fly.io, Render), SQLite can stay as-is.
+1. Create a project on [neon.tech](https://neon.tech). Copy the **pooled** and **direct** connection strings.
+2. Generate a real `AUTH_SECRET`:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+   ```
+3. Import this repo on [vercel.com/new](https://vercel.com/new). Set three env vars:
+   - `DATABASE_URL` — Neon pooled URL
+   - `DIRECT_URL` — Neon direct URL
+   - `AUTH_SECRET` — the value from step 2
+4. Deploy. The build runs `prisma db push`, so tables are created automatically on first deploy.
 
 ## License
 

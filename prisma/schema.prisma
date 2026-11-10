@@ -3,8 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  // Postgres (Neon) for production; set DATABASE_URL to the pooled URL
+  // and DIRECT_URL to the direct URL. Prisma uses DIRECT_URL for
+  // migrations / `db push` so the pooler doesn't choke on DDL.
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {

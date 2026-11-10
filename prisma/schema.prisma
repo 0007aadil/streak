@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  streaks      Streak[]
+}
+
+model Streak {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  color       String    @default("accent")
+  createdAt   DateTime  @default(now())
+  archivedAt  DateTime?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkIns CheckIn[]
+
+  @@index([userId])
+}
+
+model CheckIn {
+  id       String   @id @default(cuid())
+  streakId String
+  // Local calendar day stored as YYYY-MM-DD (user's own day boundary)
+  date     String
+  // NONE is implicit (no row); stored levels: PARTIAL, FULL
+  level    String
+  note     String?
+  createdAt DateTime @default(now())
+
+  streak Streak @relation(fields: [streakId], references: [id], onDelete: Cascade)
+
+  @@unique([streakId, date])
+  @@index([streakId])
+}
